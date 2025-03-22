@@ -574,6 +574,22 @@ yarn-debug.log*
 yarn-error.log*
 
 
+# Gradle
+.gradle/
+build/
+
+# Test results
+test-results/
+*.log
+
+# IntelliJ
+.idea/
+*.iml
+
+# Node
+node_modules/
+
+
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
 
