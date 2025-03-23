@@ -18,11 +18,11 @@ def query(rank, rank1):
         }
     }
 
-    print(json.dumps(payload))
+    # print(json.dumps(payload))
 
     response = requests.post(API_URL, headers=headers, json=payload)
 
-    print(f"Response {response.status_code}")
+    # print(f"Response {response.status_code}")
     return response.json()
 
 
@@ -73,7 +73,9 @@ tier1 = sys.argv[2]
 
 # result = query(tier, tier1)
 
-print(similarity_list(tier, tier1))
+final_percentage = similarity_list(tier, tier1)
+
+print(f"Similarity Percentage: {final_percentage}")
 
 # print(average)
 
