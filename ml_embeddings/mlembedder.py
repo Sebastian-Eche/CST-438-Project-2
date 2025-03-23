@@ -18,7 +18,11 @@ def query(rank, rank1):
         }
     }
 
+    print(json.dumps(payload))
+
     response = requests.post(API_URL, headers=headers, json=payload)
+
+    print(json.dumps(response))
     return response.json()
 
 
