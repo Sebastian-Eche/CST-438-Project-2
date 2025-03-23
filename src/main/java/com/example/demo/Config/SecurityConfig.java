@@ -45,7 +45,7 @@ public class SecurityConfig {
                                 "/index.html", "/public/**","/static/**", "/Frontend/**",
                                 "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll() //allows anyone to access these endpoints
                         .requestMatchers("/user/deleteUser/{id}", "/user/all", "/user/put").hasAuthority("ROLE_ADMIN") //must be admin
-                        .requestMatchers("/user/**","/tier/**","/auth/deleteAcc").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN") //can be either but signed in
+                        .requestMatchers("/user/**","/tier/**","/auth/deleteAcc","/user/editUser/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN") //can be either but signed in
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
