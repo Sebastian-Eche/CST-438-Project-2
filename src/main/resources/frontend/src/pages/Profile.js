@@ -100,6 +100,7 @@ export default function Profile() {
 
    const handleUpdateProfile = (e) => {
     e.preventDefault();
+    console.log("PREVENTING DEAFUALT SUBMISSION")
     setUpdateMessage("");
     
     // Validate passwords match if changing password
