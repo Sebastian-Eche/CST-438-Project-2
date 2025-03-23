@@ -98,6 +98,66 @@ export default function Profile() {
        });
    };
 
+   const handleUpdateProfile = (e) => {
+    e.preventDefault();
+    setUpdateMessage("");
+    
+    // Validate passwords match if changing password
+    if (updatedPassword && updatedPassword !== confirmPassword) {
+        setUpdateMessage("Passwords do not match!");
+        return;
+    }
+    
+    const token = localStorage.getItem("token");
+    
+    // Prepare update data
+    const updateData = {
+        username: updatedUsername !== userData.username ? updatedUsername : null,
+        password: updatedPassword || null
+    };
+    
+    // Remove null values
+    Object.keys(updateData).forEach(key => 
+        updateData[key] === null && delete updateData[key]
+    );
+    
+    // Don't send if nothing to update
+    if (Object.keys(updateData).length === 0) {
+        setUpdateMessage("No changes to update");
+        return;
+    }
+    
+    fetch(`/user/editUser/${userData.id}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(updateData)
+    })
+      .then(response => response.json())
+      .then(success => {
+        if (!success) {
+         setUpdateMessage("Update failed: Password must be at least 6 characters long and contain at least one special character.");
+         return;
+    }
+
+       setUpdateMessage("Profile updated successfully!");
+
+     // If username was changed, update it in localStorage
+       if (updateData.username) {
+         localStorage.setItem("username", updatedUsername);
+        }
+
+       fetchUserData();
+       setEditMode(false);
+    })
+    .catch(error => {
+        console.error("Error updating profile:", error);
+        setUpdateMessage("Error updating profile. Please try again.");
+    });
+};
+
 
 
    return (
@@ -138,7 +198,7 @@ export default function Profile() {
                    ) : (
                        <div>
                            <h2>Edit Profile</h2>
-                           <form>
+                           <form onSubmit={handleUpdateProfile}>
                                <div>
                                    <label htmlFor="username">Username:</label>
                                    <input
