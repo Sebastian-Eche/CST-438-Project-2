@@ -576,6 +576,7 @@ yarn-error.log*
 
 # Gradle
 .gradle/
+.gradle
 build/
 
 # Test results
