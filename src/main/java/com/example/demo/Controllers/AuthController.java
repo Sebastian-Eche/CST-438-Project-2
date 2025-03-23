@@ -1,6 +1,7 @@
 package com.example.demo.Controllers;
 
 import com.example.demo.Config.JwtUtils;
+import com.example.demo.Service.AuthService;
 import com.example.demo.Service.UserService;
 import com.example.demo.Tables.User;
 import com.example.demo.Tables.Role;
@@ -77,6 +78,11 @@ public class AuthController {
             return ResponseEntity.badRequest().body("User already exists!");
         }
 
+
+        if (!userService.validatePassword(password)) {
+            return ResponseEntity.badRequest().body("Password must be at least 6 characters long and contain at least one special character.");
+        }
+
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
@@ -99,5 +105,17 @@ public class AuthController {
 
         return ResponseEntity.ok("Logged out successfully. Please discard your token.");
     }
+
+    @DeleteMapping("/deleteAcc")
+    public ResponseEntity<String> deleteAcc(@RequestParam Integer id, @RequestParam String password) {
+        if (!userService.deleteAccount(id, password)) {
+            return ResponseEntity.internalServerError().body("Cannot Delete Account");
+        } else {
+            return ResponseEntity.ok("Account Deleted");
+        }
+    }
+
+
+
 
 }

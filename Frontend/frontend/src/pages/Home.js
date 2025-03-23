@@ -21,16 +21,16 @@ export default function Home() {
 
   return (
     <div>
-      <Link to="/" style={{ margin: "0 10px" }}> Home Page</Link>
-      <Link to="/Admin" style={{ margin: "0 10px" }}> Admin Page</Link>
-      <Link to="/LoginOrSignup" style={{ margin: "0 10px" }}> Login Page</Link>
-      <Link to="/Profile" style={{ margin: "0 10px" }}> Profile Page</Link>
-      <Link to="/Tierlist" style={{ margin: "0 10px" }}> TierList Page</Link>
+      <Link to="/" style={{ margin: "0 10px" }}> Home </Link>
+      <Link to="/Admin" style={{ margin: "0 10px" }}> Admin </Link>
+      <Link to="/LoginOrSignup" style={{ margin: "0 10px" }}> LoginOrSignup </Link>
+      <Link to="/Profile" style={{ margin: "0 10px" }}> Profile </Link>
+      <Link to="/Tierlist" style={{ margin: "0 10px" }}> TierList </Link>
       <h1>Home Page</h1>
       <p>Welcome to the home page!</p>
 
       <h3>Message from API:</h3>
-      <p>{message}</p>
+      {/*<p>{message}</p>/*/}
 
     </div>
   );

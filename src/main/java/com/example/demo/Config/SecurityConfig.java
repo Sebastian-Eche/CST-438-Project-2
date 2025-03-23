@@ -33,15 +33,19 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
     }
 
+    //in case we need this again
+    // .cors(cors -> cors.configurationSource(corsConfigurationSource()))
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login", "/auth/register","/auth/logout","/").permitAll() //allows anyone access to these endpoints
+                        .requestMatchers(
+                                "/auth/login", "/auth/register","/auth/logout","/",
+                                "/index.html", "/public/**","/static/**", "/Frontend/**",
+                                "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll() //allows anyone to access these endpoints
                         .requestMatchers("/user/deleteUser/{id}", "/user/all", "/user/put").hasAuthority("ROLE_ADMIN") //must be admin
-                        .requestMatchers("/user/**","/tier/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN") //can be either but signed in
+                        .requestMatchers("/user/**","/tier/**","/auth/deleteAcc").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN") //can be either but signed in
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -71,6 +75,7 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
+    /*
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -81,5 +86,5 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
+    } */
 }

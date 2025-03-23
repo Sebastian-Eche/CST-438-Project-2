@@ -80,14 +80,51 @@ public class UserController {
     }
 
     @PatchMapping("/editUser/{id}")
-    public boolean editUser(@PathVariable Integer id, @RequestBody User userUpdates) {
-        return userService.editUser(id, userUpdates);
+    public ResponseEntity<String> editUser(@PathVariable Integer id, @RequestBody User userUpdates) {
+        User existingUser = userService.getUser(id);
+        if (existingUser == null) {
+            return ResponseEntity.badRequest().body("User not found.");
+        }
+
+        // Validate password if it's being updated
+        if (userUpdates.getPassword() != null) {
+            if (userUpdates.getPassword().length() < 6) {
+                return ResponseEntity.badRequest().body("Password must be at least 6 characters long.");
+            }
+            if (!userUpdates.getPassword().matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
+                return ResponseEntity.badRequest().body("Password must contain at least one special character.");
+            }
+        }
+
+        boolean success = userService.editUser(id, userUpdates);
+        if (success) {
+            return ResponseEntity.ok("Success: The user profile has been updated successfully.");
+        } else {
+            return ResponseEntity.internalServerError().body("Error: Could not update the user. Please try again later.");
+        }
     }
+
 
     @PutMapping("/put")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public boolean putUser(@RequestParam String username, @RequestParam String password, @RequestParam String role) {
-            Role userRole = Role.valueOf(role);
-            return userService.putUser(username, password, userRole);
+    public ResponseEntity<String> putUser(@RequestParam String username, @RequestParam String password, @RequestParam String role) {
+        Role userRole = Role.valueOf(role);
+
+        // Validate password before allowing user creation/update
+        if (password.length() < 6) {
+            return ResponseEntity.badRequest().body("Error: Password must be at least 6 characters long.");
+        }
+        if (!password.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
+            return ResponseEntity.badRequest().body("Error: Password must contain at least one special character.");
+        }
+
+        boolean success = userService.putUser(username, password, userRole);
+
+        if (success) {
+            return ResponseEntity.ok("Success: User has been added or updated.");
+        } else {
+            return ResponseEntity.internalServerError().body("Error: Failed to add or update user.");
+        }
     }
+
 }

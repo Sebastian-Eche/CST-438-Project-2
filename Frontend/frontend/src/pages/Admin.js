@@ -154,11 +154,11 @@ export default function Admin() {
     return (
         <div>
             <nav style={styles.nav}>
-                <Link to="/" style={styles.navLink}> Home Page</Link>
-                <Link to="/Admin" style={styles.navLink}> Admin Page</Link>
+                <Link to="/" style={styles.navLink}> Home </Link>
+                <Link to="/Admin" style={styles.navLink}> Admin </Link>
                 <Link to="/LoginOrSignup" style={styles.navLink}> LoginOrSignup</Link>
-                <Link to="/Profile" style={styles.navLink}> Profile Page</Link>
-                <Link to="/Tierlist" style={styles.navLink}> TierList Page</Link>
+                <Link to="/Profile" style={styles.navLink}> Profile </Link>
+                <Link to="/Tierlist" style={styles.navLink}> TierList </Link>
             </nav>
 
             <h1>Admin Page</h1>
