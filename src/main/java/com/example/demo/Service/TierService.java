@@ -28,6 +28,12 @@ public class TierService {
     @Autowired
     private SubjectEntryRepo subjectEntryRepo;
 
+    public TierService(TierRepo tierRepo, SubjectRepo subjectRepo, SubjectEntryRepo subjectEntryRepo) {
+        this.tierRepo = tierRepo;
+        this.subjectRepo = subjectRepo;
+        this.subjectEntryRepo = subjectEntryRepo;
+    }
+
     public List<Tier> getAllTiers(){
         return tierRepo.findAll();
     }
@@ -54,43 +60,36 @@ public class TierService {
         }
     }
 
-    public void editTier(Integer id, Tier changesToTier){
-        // TODO
+    public void editTier(Integer id, Tier changesToTier) {
         Tier tierByID = tierRepo.findById(id).orElse(null);
-
-        if(tierByID == null){
+    
+        if (tierByID == null) {
             System.err.println("tierByID: " + tierByID + " is null");
             return;
         }
-
-        
-        if(changesToTier.getS() != null){
-            tierByID.setS(changesToTier.getA());
+    
+        if (changesToTier.getS() != null) {
+            tierByID.setS(changesToTier.getS());
         }
-
-        if(changesToTier.getA() != null){
+        if (changesToTier.getA() != null) {
             tierByID.setA(changesToTier.getA());
         }
-
-        if(changesToTier.getB() != null){
-            tierByID.setB(changesToTier.getA());
+        if (changesToTier.getB() != null) {
+            tierByID.setB(changesToTier.getB());
         }
-
-        if(changesToTier.getC() != null){
-            tierByID.setC(changesToTier.getA());
+        if (changesToTier.getC() != null) {
+            tierByID.setC(changesToTier.getC());
         }
-
-        if(changesToTier.getD() != null){
-            tierByID.setD(changesToTier.getA());
+        if (changesToTier.getD() != null) {
+            tierByID.setD(changesToTier.getD());
         }
-
-        if(changesToTier.getF() != null){
-            tierByID.setF(changesToTier.getA());
+        if (changesToTier.getF() != null) {
+            tierByID.setF(changesToTier.getF());
         }
-
+    
         tierRepo.save(tierByID);
     }
-
+    
     public void putTier(Integer id, Tier newTier){
         Tier currentTier = tierRepo.findById(id).orElse(null);
 
