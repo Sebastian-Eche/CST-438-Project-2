@@ -3,9 +3,11 @@ import json
 import sys
 import math
 import requests
+import os
 
+api_key = os.environ.get("HUGGINGFACE_API")
 API_URL = "https://router.huggingface.co/hf-inference/pipeline/sentence-similarity/sentence-transformers/all-MiniLM-L6-v2"
-headers = {"Authorization": "Bearer ${HUGGINGFACE_API}"}
+headers = {"Authorization": f"Bearer {api_key}"}
 
 def query(rank, rank1):
 
