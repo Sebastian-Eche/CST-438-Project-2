@@ -1,5 +1,6 @@
 package com.example.demo.Tables;
-
+import com.example.demo.Tables.Role;
+import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,25 +16,32 @@ public class User {
     private Integer id;
     private String username;
     private String password;
+    @Enumerated(EnumType.STRING) // Stores role as 'USER' or 'ADMIN'
+    @Column(nullable = false)
+    private Role role;
 
-    public User(String username, String password){
+    public User(String username, String password, Role role) {
         this.username = username;
         this.password = password;
+        this.role = role;
     }
 
-    public User(){}
+    public User() {
+    }
 
     public Integer getId() {
         return id;
     }
-   
+
     public String getUsername() {
         return username;
     }
-    
+
     public String getPassword() {
         return password;
     }
+
+    public Role getRole() { return role; }
 
     public void setId(Integer id) {
         this.id = id;
@@ -46,5 +54,7 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public void setRole(Role role) { this.role = role; }
 
 }

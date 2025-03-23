@@ -2,8 +2,9 @@ package com.example.demo.Service;
 
 import java.util.List;
 
+import com.example.demo.Tables.Role;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.Repositories.UserRepo;
@@ -15,7 +16,14 @@ public class UserService {
     @Autowired
     private UserRepo userRepo;
 
-    private BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder(10); 
+    //private BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder(10);
+    private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public UserService(UserRepo userRepo, PasswordEncoder passwordEncoder) { // Inject via constructor
+        this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public List<User> getAllUsers() {
         return userRepo.findAll();
@@ -29,7 +37,6 @@ public class UserService {
         return userRepo.findByUsername(username);
     }
 
-
     public boolean deleteUser(Integer id) {
         if (userRepo.existsById(id)) { //checks if user exists before deleting
             userRepo.deleteById(id);
@@ -38,10 +45,9 @@ public class UserService {
         return false;
     }
 
-
     public boolean addUser(User user) {
         try {
-            user.setPassword(bcrypt.encode(user.getPassword()));
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepo.save(user);
             return true;
         } catch (Exception e) {
@@ -60,19 +66,55 @@ public class UserService {
             existingUser.setUsername(userUpdates.getUsername());
         }//updates password
         if (userUpdates.getPassword() != null) {
-            existingUser.setPassword(bcrypt.encode(userUpdates.getPassword()));
+            if (!validatePassword(userUpdates.getPassword())) {
+                return false; // Invalid password, update fails
+            }
+            existingUser.setPassword(passwordEncoder.encode(userUpdates.getPassword()));
         }
         //saves changes
         userRepo.save(existingUser);
         return true;
     }
 
-    public void putUser(Integer id, User newUser){
-        User currentUser = userRepo.findById(id).orElse(null);
+    public boolean putUser(String username, String password, Role role){
+        User existingUser = getUserByUsername(username);
 
-        currentUser.setUsername(newUser.getUsername());
-        currentUser.setPassword(bcrypt.encode(newUser.getPassword()));
+        if (existingUser != null) {
+            // Update existing user
+            if (password != null && !password.isEmpty()) {
+                existingUser.setPassword(passwordEncoder.encode(password));
+            }
+            existingUser.setRole(role);
 
-        userRepo.save(currentUser);
+            userRepo.save(existingUser);
+            return true;
+        } else {
+            // Create new user
+            User newUser = new User();
+            newUser.setUsername(username);
+            newUser.setPassword(passwordEncoder.encode(password));
+            newUser.setRole(role);
+
+            userRepo.save(newUser);
+            return true;
+        }
     }
+
+    public boolean deleteAccount(Integer id, String password) {
+        User existingUser = userRepo.findById(id).orElse(null);
+
+        if (existingUser != null && passwordEncoder.matches(password, existingUser.getPassword())) {
+            userRepo.deleteById(id);
+            return true;
+        }
+
+        return false;
+    }
+
+    //checks if password is greater than or equal to 6 and has a special char
+    public boolean validatePassword(String password) {
+        return password.length() >= 6 && password.matches(".*[!@#$%^&*(),.?\":{}|<>].*");
+    }
+
+
 }

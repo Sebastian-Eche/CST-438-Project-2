@@ -2,16 +2,31 @@ package com.example.demo.Service;
 
 import java.util.List;
 
+import com.example.demo.Tables.SubjectEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.Repositories.TierRepo;
 import com.example.demo.Tables.Tier;
 
+
+import com.example.demo.Repositories.SubjectRepo;
+import com.example.demo.Tables.Subject;
+
+import com.example.demo.Repositories.SubjectEntryRepo;
+import com.example.demo.Tables.SubjectEntry;
+
+
 @Service
 public class TierService {
     @Autowired
     private TierRepo tierRepo;
+
+    @Autowired
+    private SubjectRepo subjectRepo;
+
+    @Autowired
+    private SubjectEntryRepo subjectEntryRepo;
 
     public List<Tier> getAllTiers(){
         return tierRepo.findAll();
@@ -19,6 +34,10 @@ public class TierService {
 
     public Tier getTier(Integer id){
         return tierRepo.findById(id).orElse(null);
+    }
+
+    public List<Tier> getTierByUser(Integer userId) {
+        return tierRepo.findByUserId(userId);
     }
 
     public List<Tier> getTiersBySubject(String subject){
@@ -85,4 +104,15 @@ public class TierService {
         tierRepo.save(currentTier);
     }
 
+    public List<Subject> getAllSubjects() {
+        return subjectRepo.findAll();
+    }
+
+    public List<SubjectEntry> getAllEntries() {
+        return subjectEntryRepo.findAll();
+    }
+
+    public List<SubjectEntry> getEntriesBySubjectId(Integer subjectId) {
+        return subjectEntryRepo.findBySubject_Id(subjectId);
+    }
 }

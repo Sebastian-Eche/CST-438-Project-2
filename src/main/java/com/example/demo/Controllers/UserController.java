@@ -4,32 +4,32 @@
 package com.example.demo.Controllers;
 
 import java.util.List;
-import java.util.Scanner;
-import java.util.concurrent.atomic.AtomicInteger;
 
+import com.example.demo.Tables.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.boot.SpringApplication;
 // import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+
+import java.security.Principal;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 
 import com.example.demo.Service.UserService;
 import com.example.demo.Tables.User;
 
-@CrossOrigin(origins = "http://localhost:3000")
+//@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/user")
 public class UserController {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     @Autowired
     private UserService userService;
 
@@ -40,17 +40,30 @@ public class UserController {
 
     //this one works and gets all the users from the database
     @GetMapping("/all")
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<List<User>> getAllUsers(Principal principal) {
+        logger.info("User '{}' is requesting /user/all", principal.getName());
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        logger.info("User roles: {}", auth.getAuthorities());
+
+        List<User> users = userService.getAllUsers();
+        if (users.isEmpty()) {
+            logger.warn("No users found in database.");
+            return ResponseEntity.status(404).body(null);
+        }
+        logger.info("Returning {} users.", users.size());
+        return ResponseEntity.ok(users);
     }
 
+
     @GetMapping("/{id}")
-    public User getUser(@PathVariable Integer id){
+    public User getUser(@PathVariable Integer id) {
         return userService.getUser(id);
     }
 
     @GetMapping("/username/{username}")
-    public User getUserByUsername(@PathVariable String username){
+    public User getUserByUsername(@PathVariable String username) {
         return userService.getUserByUsername(username);
     }
 
@@ -60,17 +73,58 @@ public class UserController {
     }
 
     @DeleteMapping("/deleteUser/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public boolean deleteUser(@PathVariable Integer id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return userService.deleteUser(id);
     }
 
     @PatchMapping("/editUser/{id}")
-    public boolean editUser(@PathVariable Integer id, @RequestBody User userUpdates) {
-        return userService.editUser(id,userUpdates);
+    public ResponseEntity<String> editUser(@PathVariable Integer id, @RequestBody User userUpdates) {
+        User existingUser = userService.getUser(id);
+        if (existingUser == null) {
+            return ResponseEntity.badRequest().body("User not found.");
+        }
+
+        // Validate password if it's being updated
+        if (userUpdates.getPassword() != null) {
+            if (userUpdates.getPassword().length() < 6) {
+                return ResponseEntity.badRequest().body("Password must be at least 6 characters long.");
+            }
+            if (!userUpdates.getPassword().matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
+                return ResponseEntity.badRequest().body("Password must contain at least one special character.");
+            }
+        }
+
+        boolean success = userService.editUser(id, userUpdates);
+        if (success) {
+            return ResponseEntity.ok("Success: The user profile has been updated successfully.");
+        } else {
+            return ResponseEntity.internalServerError().body("Error: Could not update the user. Please try again later.");
+        }
     }
 
-    @PutMapping("/change/{id}")
-    public void putUser(@PathVariable Integer id, @RequestBody User userUpdates){
-        userService.putUser(id, userUpdates);
+
+    @PutMapping("/put")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<String> putUser(@RequestParam String username, @RequestParam String password, @RequestParam String role) {
+        Role userRole = Role.valueOf(role);
+
+        // Validate password before allowing user creation/update
+        if (password.length() < 6) {
+            return ResponseEntity.badRequest().body("Error: Password must be at least 6 characters long.");
+        }
+        if (!password.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
+            return ResponseEntity.badRequest().body("Error: Password must contain at least one special character.");
+        }
+
+        boolean success = userService.putUser(username, password, userRole);
+
+        if (success) {
+            return ResponseEntity.ok("Success: User has been added or updated.");
+        } else {
+            return ResponseEntity.internalServerError().body("Error: Failed to add or update user.");
+        }
     }
+
 }

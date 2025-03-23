@@ -8,4 +8,5 @@ import com.example.demo.Tables.Tier;
 
 public interface TierRepo extends JpaRepository<Tier, Integer>{
     List<Tier> findBySubject(String subject);
+    List<Tier> findByUserId(Integer userId);
 }

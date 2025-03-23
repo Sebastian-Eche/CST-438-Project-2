@@ -1,22 +1,16 @@
 package com.example.demo.Controllers;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.Service.TierService;
 import com.example.demo.Tables.Tier;
+import com.example.demo.Tables.Subject;
+import com.example.demo.Tables.SubjectEntry;
 
+//@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/tier")
 public class TierController {
@@ -64,6 +58,22 @@ public class TierController {
     @PutMapping("/change/{id}")
     public void putTier(@PathVariable Integer id, @RequestBody Tier tierChanges){
         tierService.putTier(id, tierChanges);
+    }
+
+    @GetMapping("/getByUserId/{userId}")
+    public List<Tier> getByUserId(@PathVariable Integer userId){
+        return tierService.getTierByUser(userId);
+    }
+
+    @GetMapping("/getSubjects")
+    public List<Subject> getAllSubjects() {
+        return tierService.getAllSubjects();
+    }
+
+    // Get all entries for a subject
+    @GetMapping("/{subjectId}/entries")
+    public List<SubjectEntry> getEntriesForSubject(@PathVariable Integer subjectId) {
+        return tierService.getEntriesBySubjectId(subjectId);
     }
 
 }

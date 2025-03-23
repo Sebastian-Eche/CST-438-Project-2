@@ -18,8 +18,9 @@ public class Tier {
     private String c;
     private String d;
     private String f;
+    private Integer userId;
 
-    public Tier (String subject, String s, String a, String b, String c, String d, String f){
+    public Tier (String subject, String s, String a, String b, String c, String d, String f, Integer userId){
         this.subject = subject;
         this.s = s;
         this.a = a;
@@ -27,6 +28,7 @@ public class Tier {
         this.c = c;
         this.d = d;
         this.f = f;
+        this.userId = userId;
     }
 
     public Tier(){}
@@ -54,6 +56,7 @@ public class Tier {
     public String getF() {
         return f;
     }
+    public Integer getUserId() { return userId; }
 
     public void setId(Integer id) {
         this.id = id;
