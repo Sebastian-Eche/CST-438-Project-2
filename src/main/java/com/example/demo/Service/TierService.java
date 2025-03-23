@@ -14,7 +14,6 @@ import com.example.demo.Repositories.SubjectRepo;
 import com.example.demo.Tables.Subject;
 
 import com.example.demo.Repositories.SubjectEntryRepo;
-import com.example.demo.Tables.SubjectEntry;
 
 
 @Service

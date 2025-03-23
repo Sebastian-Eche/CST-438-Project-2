@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/auth/login", "/auth/register","/auth/logout","/",
+                                "/tier/compare","/auth/login", "/auth/register","/auth/logout","/",
                                 "/index.html", "/public/**","/static/**", "/Frontend/**",
                                 "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll() //allows anyone to access these endpoints
                         .requestMatchers("/user/deleteUser/{id}", "/user/all", "/user/put").hasAuthority("ROLE_ADMIN") //must be admin

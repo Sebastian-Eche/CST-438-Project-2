@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 export default function Home() {
   const [username, setUsername] = useState(localStorage.getItem("username"));
   const [mostRecentTier, setMostRecentTier] = useState(null);
+  const [similarity, setSimilarity] = useState(null);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -15,7 +16,6 @@ export default function Home() {
 
     const fetchUserAndTier = async () => {
       try {
-        // Fetch user info to get ID
         const userResponse = await fetch(`/user/username/${username}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -26,7 +26,6 @@ export default function Home() {
         const user = await userResponse.json();
         const userId = user.id;
 
-        // Fetch user's tier lists
         const tierResponse = await fetch(`/tier/getByUserId/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -39,6 +38,26 @@ export default function Home() {
         if (tiers.length > 0) {
           const latest = [...tiers].sort((a, b) => b.id - a.id)[0];
           setMostRecentTier(latest);
+
+          // Fetch similarity from /tier/compare
+          const compareRes = await fetch(
+            `/tier/compare?id=${latest.id}&subject=${encodeURIComponent(latest.subject)}`
+          );
+          if (!compareRes.ok) throw new Error("Failed to compare tiers");
+
+          const rawOutput = await compareRes.text();
+          console.log("Raw similarity response:", rawOutput);
+
+          // Extract and convert number from raw output
+          const floats = rawOutput.match(/\d+\.\d+/g);
+          if (floats && floats.length > 0) {
+            const lastFloat = parseFloat(floats[floats.length - 1]);
+            const percent = (lastFloat * 100).toFixed(2);
+            setSimilarity(percent);
+          } else {
+            setSimilarity("N/A");
+          }
+          
         }
       } catch (err) {
         console.error(err);
@@ -75,6 +94,11 @@ export default function Home() {
               <p><strong>C:</strong> {mostRecentTier.c || "None"}</p>
               <p><strong>D:</strong> {mostRecentTier.d || "None"}</p>
               <p><strong>F:</strong> {mostRecentTier.f || "None"}</p>
+              {similarity && (
+                <p style={styles.similarity}>
+                  🔍 This tier list is <strong>{similarity}%</strong> similar to another user's!
+                </p>
+              )}
             </div>
           ) : (
             <p>You have not created any tier lists yet.</p>
@@ -106,6 +130,11 @@ const styles = {
     padding: "15px",
     marginTop: "20px",
     borderRadius: "5px"
+  },
+  similarity: {
+    marginTop: "10px",
+    fontSize: "16px",
+    color: "#333"
   },
   error: {
     color: "red"
