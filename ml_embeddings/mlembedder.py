@@ -22,7 +22,7 @@ def query(rank, rank1):
 
     response = requests.post(API_URL, headers=headers, json=payload)
 
-    print(json.dumps(response))
+    print(f"Response {response.status_code}")
     return response.json()
 
 
