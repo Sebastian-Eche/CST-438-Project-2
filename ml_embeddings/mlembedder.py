@@ -75,8 +75,8 @@ tier1 = sys.argv[2]
 # result = query(tier, tier1)
 
 final_percentage = similarity_list(tier, tier1)
-
-print(f"Similarity Percentage: {final_percentage}")
+print("\n")
+print(f"\nSimilarity Percentage: {final_percentage}")
 
 # print(average)
 
