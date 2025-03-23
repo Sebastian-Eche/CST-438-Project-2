@@ -72,7 +72,7 @@ public class TierController {
         }
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         StringBuilder pythonOutput = new StringBuilder();
-        pythonOutput.append("\n\n")
+        pythonOutput.append("\n\n");
         String percentage = "";
         try {
             while ((percentage = reader.readLine()) != null) {
@@ -90,7 +90,7 @@ public class TierController {
             e.printStackTrace();
         }
         // System.out.println(pythonOutput.toString());
-        pythonOutput.append("\n")
+        pythonOutput.append("\n");
         return pythonOutput.toString();
     }
     // @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
