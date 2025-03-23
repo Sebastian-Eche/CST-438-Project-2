@@ -18,11 +18,12 @@ def query(rank, rank1):
         }
     }
 
-    # print(json.dumps(payload))
+    print(f"Payload: {json.dumps(payload)}")
 
     response = requests.post(API_URL, headers=headers, json=payload)
 
-    # print(f"Response {response.status_code}")
+    # print(f"Response: {response.status_code}")
+
     return response.json()
 
 
