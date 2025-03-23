@@ -60,7 +60,7 @@ public class TierController {
         String tierByIDText = "S: " + tierByID.getS() + " ^ A: " + tierByID.getA() + " ^ B: " + tierByID.getB() + " ^ C: " + tierByID.getC() + " ^ D: " + tierByID.getD() + " ^ F: " + tierByID.getF();
         String randomTierText = "S: " + randomTier.getS() + " ^ A: " + randomTier.getA() + " ^ B: " + randomTier.getB() + " ^ C: " + randomTier.getC() + " ^ D: " + randomTier.getD() + " ^ F: " + randomTier.getF();
 
-        //everything below is to run the python file
+        //everything below is to run the python file remove the 3 as thats mac only
         ProcessBuilder pb = new ProcessBuilder("python", "ml_embeddings/mlembedder.py", tierByIDText, randomTierText);
         pb.redirectErrorStream(true);
         Process process = null;
